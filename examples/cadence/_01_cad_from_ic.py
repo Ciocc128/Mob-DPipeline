@@ -39,7 +39,7 @@ We will use a single short-trail from the "HA" participant for this example, as 
 All the cadence algorithms are designed to work on a single gait sequence at a time.
 
 """
-
+# %%
 from mobgap.data import LabExampleDataset
 
 lab_example_data = LabExampleDataset(reference_system="INDIP")

@@ -1,0 +1,146 @@
+{
+    "GSDB_Output": {
+        "TimeMeasure1": {
+            "Test4": {
+                "Trial1": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 680,
+                                "End": 2457,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial2": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 505,
+                                "End": 2487,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial3": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 902,
+                                "End": 2390,
+                                "fs": 100
+                            }
+                        }
+                    }
+                }
+            },
+            "Test5": {
+                "Trial1": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 610,
+                                "End": 1587,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial2": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 452,
+                                "End": 1417,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial3": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 617,
+                                "End": 1685,
+                                "fs": 100
+                            }
+                        }
+                    }
+                }
+            },
+            "Test6": {
+                "Trial1": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 472,
+                                "End": 1257,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial2": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 425,
+                                "End": 1362,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial3": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 525,
+                                "End": 1590,
+                                "fs": 100
+                            }
+                        }
+                    }
+                }
+            },
+            "Test7": {
+                "Trial1": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 595,
+                                "End": 10000,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial2": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 465,
+                                "End": 10330,
+                                "fs": 100
+                            }
+                        }
+                    }
+                },
+                "Trial3": {
+                    "SU": {
+                        "LowerBack": {
+                            "GSD": {
+                                "Start": 607,
+                                "End": 10460,
+                                "fs": 100
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

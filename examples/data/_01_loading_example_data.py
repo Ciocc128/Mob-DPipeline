@@ -122,7 +122,9 @@ list(all_example_data_paths.keys())
 # %%
 # Then we can select the participant we want to load.
 example_participant_path = all_example_data_paths[("HA", "002")]
+print(example_participant_path)
 data = load_mobilised_matlab_format(example_participant_path / "data.mat")
+print(data)
 
 # %%
 # Calling the loader function without any further arguments, will load the "SU" (normal lower-back sensor) only.
@@ -179,3 +181,5 @@ ref_paras_functional = parse_reference_parameters(
 # %%
 # They have the same structure the reference parameters of the Dataset class.
 ref_paras_functional
+
+# %%

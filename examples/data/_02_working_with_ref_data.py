@@ -22,7 +22,7 @@ This can be achieved using the :func:`~mobgap.pipeline.GsIterator`
 
 But first, we need to load some example data.
 """
-
+ # %%
 from mobgap.data import LabExampleDataset
 
 dataset = LabExampleDataset(reference_system="INDIP")

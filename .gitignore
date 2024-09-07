@@ -240,3 +240,30 @@ _debug
 
 # Drawio backup files
 *.bkp
+
+# Ignora la cartella dell'ambiente virtuale
+mobgapVenv/
+
+# Ignora i file di ambiente virtuale comuni
+venv/
+.env/
+
+# Ignora i file di sistema
+.DS_Store
+Thumbs.db
+
+# Ignora i file di log
+*.log
+
+# Ignora i file di build
+build/
+dist/
+*.egg-info/
+
+# Ignora i file di configurazione dell'IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

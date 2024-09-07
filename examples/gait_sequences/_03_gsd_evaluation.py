@@ -6,12 +6,12 @@ GSD Evaluation
 
 This example shows how to apply evaluation algorithms to GSD and thus how to rate the performance of a GSD algorithm.
 """
-
+# %%
 import pandas as pd
 from mobgap.data import LabExampleDataset
 from mobgap.gait_sequences import GsdIluz
 
-# %%
+
 # Loading some example data
 # -------------------------
 # First, we load example data and apply the GSD Iluz algorithm to it.

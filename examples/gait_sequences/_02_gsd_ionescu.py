@@ -14,7 +14,7 @@ We start by defining some helpers for plotting and loading the data.
 You can skip them for now and jump directly to "Performance on a single lab trial", if you just want to see how to
 apply the algorithm.
 """
-
+# %%
 # Plotting Helper
 # ---------------
 # We define a helper function to plot the results of the algorithm.
@@ -188,3 +188,4 @@ fig.show()
 # --------------------------------------------------
 # To quantify how the Python output compares to the reference labels, we are providing a range of evaluation functions.
 # See the :ref:`example on GSD evaluation <gsd_evaluation>` for more details.
+
