@@ -135,6 +135,39 @@ def rotate_with_gaitmap(data, rotation_matrix):
 
     return data
 
+def plot_data(original_data, aligned_data, title):
+    """
+    Plot the original and aligned accelerometer data for comparison.
+
+    Parameters:
+        original_data (pd.DataFrame): Original accelerometer data (before rotation).
+        aligned_data (pd.DataFrame): Aligned accelerometer data (after rotation).
+        title (str): Title for the plot.
+    """
+    plt.figure(figsize=(12, 6))
+
+    # Original data plot
+    plt.subplot(1, 2, 1)
+    plt.plot(original_data.index, original_data['acc_x'], label='acc_x (Original)', color='r')
+    plt.plot(original_data.index, original_data['acc_y'], label='acc_y (Original)', color='g')
+    plt.plot(original_data.index, original_data['acc_z'], label='acc_z (Original)', color='b')
+    plt.title(f'{title} - Original Data')
+    plt.xlabel('Time')
+    plt.ylabel('Acceleration')
+    plt.legend()
+
+    # Aligned data plot
+    plt.subplot(1, 2, 2)
+    plt.plot(aligned_data.index, aligned_data['acc_x'], label='acc_x (Aligned)', color='r')
+    plt.plot(aligned_data.index, aligned_data['acc_y'], label='acc_y (Aligned)', color='g')
+    plt.plot(aligned_data.index, aligned_data['acc_z'], label='acc_z (Aligned)', color='b')
+    plt.title(f'{title} - Aligned Data')
+    plt.xlabel('Time')
+    plt.ylabel('Acceleration')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
 
 def process_and_rotate_dataset(dataset, exercise_name):
     """
