@@ -1,86 +1,106 @@
-#%%
+# Import necessary libraries for data manipulation, signal processing, and rotations
 from mobgap.data import GenericMobilisedDataset
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 from gaitmap.utils.rotations import rotate_dataset
 import matplotlib.pyplot as plt
-from scipy.signal import hilbert, find_peaks
-import numpy as np
+from scipy.signal import hilbert
+
+# --- Utility Functions ---
 
 def unit(vector):
-    """ Normalize a vector to unit length. """
+    """
+    Normalize a vector to unit length.
+
+    Parameters:
+        vector (np.ndarray): Input vector to normalize.
+
+    Returns:
+        np.ndarray: Normalized unit vector.
+    """
     return vector / np.linalg.norm(vector)
+
 
 def compute_envelope(signal):
     """
     Compute the envelope of a signal using the Hilbert transform.
-    
+
     Parameters:
-        signal (np.ndarray): The input signal (magnitude of the accelerometer data).
-    
+        signal (np.ndarray): The input signal (e.g., magnitude of accelerometer data).
+
     Returns:
         np.ndarray: The envelope of the signal.
     """
+    # Calculate the analytic signal using the Hilbert transform
     analytic_signal = hilbert(signal)
+    # The envelope is the magnitude of the analytic signal
     envelope = np.abs(analytic_signal)
     return envelope
 
+
 def detect_stationary_period(acc_data, threshold=0.01, window_size=50):
     """
-    Detect the stationary period based on the envelope of the accelerometer data.
-    
+    Detect the stationary period in accelerometer data based on the signal's envelope.
+
     Parameters:
         acc_data (np.ndarray): An N x 3 array of accelerometer data.
-        threshold (float): The threshold below which the envelope is considered stationary.
-        window_size (int): The size of the window for calculating variance.
-    
+        threshold (float): Threshold for the envelope to determine the stationary state.
+        window_size (int): Size of the window for calculating variance in the stationary state.
+
     Returns:
-        np.ndarray: The data during the stationary period.
+        np.ndarray: Subset of data during the detected stationary period.
     """
-    # Calculate the magnitude of the accelerometer data (i.e., sqrt(x^2 + y^2 + z^2))
+    # Calculate the magnitude of the accelerometer data (sqrt(x^2 + y^2 + z^2))
     acc_magnitude = np.linalg.norm(acc_data, axis=1)
 
-    # Compute the envelope of the magnitude
+    # Compute the envelope of the magnitude signal
     envelope = compute_envelope(acc_magnitude)
 
-    # Identify stationary regions (low variance in the envelope)
+    # Identify stationary regions where the envelope is below the threshold
     stationary_mask = envelope < threshold
     stationary_indices = np.where(stationary_mask)[0]
 
-    # If there are no stationary regions detected, fallback to initial part of the signal
+    # If no stationary region is detected, fallback to using the first part of the signal
     if len(stationary_indices) == 0:
         print("No clear stationary period detected. Defaulting to first part of the signal.")
         return acc_data[:window_size]
 
-    # Take the first contiguous block of stationary indices
+    # Use the first contiguous block of stationary indices
     start_idx = stationary_indices[0]
     end_idx = start_idx + window_size
     stationary_data = acc_data[start_idx:end_idx]
 
     return stationary_data
 
+
 def calc_R(acc_data):
     """
     Calculate the rotation matrix to align the accelerometer data with the gravity vector.
-    
+
     Parameters:
         acc_data (np.ndarray): An N x 3 array of accelerometer data.
-    
+
     Returns:
-        np.ndarray: The rotation matrix (3x3).
+        np.ndarray: The rotation matrix (3x3) to align the data with the gravity vector.
     """
-    gravity_local_ideal = np.array([1, 0, 0])  # Ideal gravity vector
+    # Ideal gravity vector, assumed to be along the X-axis
+    gravity_local_ideal = np.array([1, 0, 0])
 
-    # Detect stationary period from the envelope
+    # Detect the stationary period and compute the real gravity vector
     stationary_data = detect_stationary_period(acc_data)
+    gravity_local_real = unit(np.mean(stationary_data, axis=0))
 
-    # Use the stationary period data to compute the real gravity vector
-    gravity_local_real = unit(np.mean(stationary_data, axis=0))  # Stationary state average
+    # Log the detected gravity vector for verification
     print(f"Real gravity vector: {gravity_local_real}")
 
+    # Calculate the angle between the real and ideal gravity vectors
     angle = np.degrees(np.arccos(np.clip(np.dot(gravity_local_real, gravity_local_ideal), -1.0, 1.0)))
+
+    # Calculate the rotation axis using the cross product
     rotation_axis = unit(np.cross(gravity_local_real, gravity_local_ideal))
     half_angle_rad = np.radians(angle / 2)
+
+    # Create a quaternion from the angle and axis, and convert it to a rotation matrix
     q = np.hstack(([np.cos(half_angle_rad)], rotation_axis * np.sin(half_angle_rad)))
     rotation_matrix = R.from_quat(q).as_matrix()
 
@@ -89,118 +109,77 @@ def calc_R(acc_data):
 
 def rotate_with_gaitmap(data, rotation_matrix):
     """
-    Rotate the accelerometer and gyroscope data using the gaitmap rotation utility.
-    
+    Rotate the accelerometer and gyroscope data using a rotation matrix.
+
     Parameters:
         data (pd.DataFrame): DataFrame containing accelerometer and gyroscope data.
         rotation_matrix (np.ndarray): A 3x3 rotation matrix.
-    
+
     Returns:
-        pd.DataFrame: The rotated data.
+        pd.DataFrame: The rotated dataset.
     """
     rotation = R.from_matrix(rotation_matrix)  # Create a Rotation object
 
-    # Ensure the DataFrame has all required columns
-    if not all(col in data.columns for col in ['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']):
+    # Ensure that the DataFrame has the necessary columns
+    required_columns = ['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']
+    if not all(col in data.columns for col in required_columns):
         raise ValueError("DataFrame must contain 'acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z' columns")
 
-    # Apply the rotation directly to the DataFrame
-    rotated_data = rotate_dataset(data, rotation)
-    
-    return rotated_data
+    # Rotate the accelerometer and gyroscope data
+    rotated_acc = rotate_dataset(data[['acc_x', 'acc_y', 'acc_z']].values, rotation)
+    rotated_gyr = rotate_dataset(data[['gyr_x', 'gyr_y', 'gyr_z']].values, rotation)
 
-def plot_data(original_data, rotated_data, title_suffix):
+    # Update the DataFrame with the rotated data
+    data[['acc_x', 'acc_y', 'acc_z']] = rotated_acc
+    data[['gyr_x', 'gyr_y', 'gyr_z']] = rotated_gyr
+
+    return data
+
+
+def process_and_rotate_dataset(dataset, exercise_name):
     """
-    Plot the original and rotated accelerometer data for comparison.
-    
+    Main function to process and rotate the dataset based on the detected stationary state and gravity alignment.
+
     Parameters:
-        original_data (pd.DataFrame): Original accelerometer data.
-        rotated_data (pd.DataFrame): Rotated accelerometer data.
+        dataset (pd.DataFrame): Input dataset containing accelerometer and gyroscope data.
+        exercise_name (str): Name of the exercise for logging and visualization purposes.
     """
-    fig, axs = plt.subplots(2, 1, figsize=(10, 8))
-
-    # Plot original data
-    axs[0].plot(original_data.index, original_data['acc_x'], label='X', color='r')
-    axs[0].plot(original_data.index, original_data['acc_y'], label='Y', color='g')
-    axs[0].plot(original_data.index, original_data['acc_z'], label='Z', color='b')
-    axs[0].set_title(f'Original Accelerometer Data {title_suffix}')
-    axs[0].legend(loc='upper right')
-
-    # Plot rotated data
-    axs[1].plot(rotated_data.index, rotated_data['acc_x'], label='X', color='r')
-    axs[1].plot(rotated_data.index, rotated_data['acc_y'], label='Y', color='g')
-    axs[1].plot(rotated_data.index, rotated_data['acc_z'], label='Z', color='b')
-    axs[1].set_title(f'Rotated Accelerometer Data {title_suffix}')
-    axs[1].legend(loc='upper right')
-
-    plt.xlabel('Sample Index')
-    plt.ylabel('Acceleration (m)')
-    plt.tight_layout()
-    plt.show()
-
-# Lista dei nomi degli esercizi
-nameExList = [
-    'Static', 'Standing', 'Per01', 'SW_slow_A', 'SW_slow_B', 'SW_slow_C',
-    'SW_comf_A', 'SW_comf_B', 'SW_comf_C', 'SW_fast_A', 'SW_fast_B', 'SW_fast_C',
-    'RT_A', 'RT_B', 'RT_C'
-]
-
-# Esempio di utilizzo
-data_path = 'C:/Users/giorg/OneDrive - Politecnico di Torino/Giorgio Trentadue/Acquisizioni/005/In Lab/Results final/data.mat'
-
-# Carica il dataset
-mobDataset = GenericMobilisedDataset(
-    [data_path],
-    test_level_names=["TimeMeasure1", "Test1", "Trial1"],
-    reference_system='INDIP',
-    measurement_condition='laboratory',
-    raw_data_sensor='SU',
-    reference_para_level='wb'
-)
-
-# Inizia dal terzo elemento del dataset (indice 2)
-for i, trial in enumerate(mobDataset):
-    if i < 2:  # Salta i primi due elementi (Static e Standing)
-        continue
-
-    exercise_name = nameExList[i]  # Ottieni il nome dell'esercizio
-
-    dataset = trial.data_ss  # `dataset` è già un DataFrame
-
-    # Verifica che il DataFrame contenga tutte le colonne necessarie
+    # Ensure the dataset has the required columns
     required_columns = ['acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z']
     if not all(col in dataset.columns for col in required_columns):
         raise ValueError("DataFrame must contain 'acc_x', 'acc_y', 'acc_z', 'gyr_x', 'gyr_y', 'gyr_z' columns")
 
-    acc_data = dataset[['acc_x', 'acc_y', 'acc_z']].values  # Ottieni i dati di accelerazione (X, Y, Z)
-    print(f"Exercise: {exercise_name} - Dati accelerometrici:\n", dataset[['acc_x', 'acc_y', 'acc_z']])
+    # Extract the accelerometer data from the dataset
+    acc_data = dataset[['acc_x', 'acc_y', 'acc_z']].values
+    print(f"Exercise: {exercise_name} - Accelerometer data:\n", dataset[['acc_x', 'acc_y', 'acc_z']])
 
-    # Step 1: Calcola la matrice di rotazione per allineare i dati alla gravità (usando solo i primi 3 secondi)
+    # Step 1: Calculate the rotation matrix to align the data with gravity
     R_real_ideal_HD = calc_R(acc_data)
 
-    # Step 2: Applica la rotazione per allineare i dati alla gravità
+    # Step 2: Apply the rotation to align the accelerometer data with gravity
     aligned_df = rotate_with_gaitmap(dataset, R_real_ideal_HD)
-    print(f"Exercise: {exercise_name} - Dati accelerometrici allineati:\n", aligned_df[['acc_x', 'acc_y', 'acc_z']])
+    print(f"Exercise: {exercise_name} - Aligned accelerometer data:\n", aligned_df[['acc_x', 'acc_y', 'acc_z']])
 
-    # Rotazione aggiuntiva per allineare i dati dello SmartPhone con il sistema di riferimento Mobilise-D
+    # Step 3: Apply an additional rotation to align the data with the Mobilise-D reference system
     additional_rotation_matrix = np.array([
-        [1, 0, 0],   # X' = X
+        [1, 0, 0],    # X' = X
         [0, -1, 0],   # Y' = -Y
-        [0, 0, -1]   # Z' = -Z
+        [0, 0, -1]    # Z' = -Z
     ])
 
-    # Converte la matrice in un oggetto Rotation
+    # Convert the additional rotation matrix to a Rotation object
     additional_rotation = R.from_matrix(additional_rotation_matrix)
 
-    # Applica la rotazione aggiuntiva utilizzando gaitmap
+    # Apply the additional rotation
     final_rotated_df = rotate_with_gaitmap(aligned_df, additional_rotation.as_matrix())
-    print(f"Exercise: {exercise_name} - Dati accelerometrici ruotati finali:\n", final_rotated_df[['acc_x', 'acc_y', 'acc_z']])
-    
-    # Plot the data
+    print(f"Exercise: {exercise_name} - Final rotated accelerometer data:\n", final_rotated_df[['acc_x', 'acc_y', 'acc_z']])
+
+    # Optional: Plot the aligned data
     plot_data(dataset[['acc_x', 'acc_y', 'acc_z']], aligned_df[['acc_x', 'acc_y', 'acc_z']], f"(Exercise: {exercise_name})")
 
-    # Se vuoi visualizzare anche i dati del giroscopio, aggiungi plot separati per il giroscopio
-    #plot_data(dataset[['gyr_x', 'gyr_y', 'gyr_z']], final_rotated_df[['gyr_x', 'gyr_y', 'gyr_z']], f"(Gyroscope Exercise: {exercise_name})")
+    # If you want to visualize the gyroscope data, you can add separate plots for it.
+    # plot_data(dataset[['gyr_x', 'gyr_y', 'gyr_z']], final_rotated_df[['gyr_x', 'gyr_y', 'gyr_z']], f"(Gyroscope - {exercise_name})")
+
 
 
 # %%
