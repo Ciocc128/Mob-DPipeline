@@ -4,10 +4,60 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 from gaitmap.utils.rotations import rotate_dataset
 import matplotlib.pyplot as plt
+from scipy.signal import hilbert, find_peaks
+import numpy as np
 
 def unit(vector):
     """ Normalize a vector to unit length. """
     return vector / np.linalg.norm(vector)
+
+def compute_envelope(signal):
+    """
+    Compute the envelope of a signal using the Hilbert transform.
+    
+    Parameters:
+        signal (np.ndarray): The input signal (magnitude of the accelerometer data).
+    
+    Returns:
+        np.ndarray: The envelope of the signal.
+    """
+    analytic_signal = hilbert(signal)
+    envelope = np.abs(analytic_signal)
+    return envelope
+
+def detect_stationary_period(acc_data, threshold=0.01, window_size=50):
+    """
+    Detect the stationary period based on the envelope of the accelerometer data.
+    
+    Parameters:
+        acc_data (np.ndarray): An N x 3 array of accelerometer data.
+        threshold (float): The threshold below which the envelope is considered stationary.
+        window_size (int): The size of the window for calculating variance.
+    
+    Returns:
+        np.ndarray: The data during the stationary period.
+    """
+    # Calculate the magnitude of the accelerometer data (i.e., sqrt(x^2 + y^2 + z^2))
+    acc_magnitude = np.linalg.norm(acc_data, axis=1)
+
+    # Compute the envelope of the magnitude
+    envelope = compute_envelope(acc_magnitude)
+
+    # Identify stationary regions (low variance in the envelope)
+    stationary_mask = envelope < threshold
+    stationary_indices = np.where(stationary_mask)[0]
+
+    # If there are no stationary regions detected, fallback to initial part of the signal
+    if len(stationary_indices) == 0:
+        print("No clear stationary period detected. Defaulting to first part of the signal.")
+        return acc_data[:window_size]
+
+    # Take the first contiguous block of stationary indices
+    start_idx = stationary_indices[0]
+    end_idx = start_idx + window_size
+    stationary_data = acc_data[start_idx:end_idx]
+
+    return stationary_data
 
 def calc_R(acc_data):
     """
@@ -20,14 +70,22 @@ def calc_R(acc_data):
         np.ndarray: The rotation matrix (3x3).
     """
     gravity_local_ideal = np.array([1, 0, 0])  # Ideal gravity vector
-    gravity_local_real = unit(np.mean(acc_data[:300], axis=0))  # Use the first 3 seconds (300 samples at 100 Hz)
+
+    # Detect stationary period from the envelope
+    stationary_data = detect_stationary_period(acc_data)
+
+    # Use the stationary period data to compute the real gravity vector
+    gravity_local_real = unit(np.mean(stationary_data, axis=0))  # Stationary state average
     print(f"Real gravity vector: {gravity_local_real}")
+
     angle = np.degrees(np.arccos(np.clip(np.dot(gravity_local_real, gravity_local_ideal), -1.0, 1.0)))
     rotation_axis = unit(np.cross(gravity_local_real, gravity_local_ideal))
     half_angle_rad = np.radians(angle / 2)
     q = np.hstack(([np.cos(half_angle_rad)], rotation_axis * np.sin(half_angle_rad)))
     rotation_matrix = R.from_quat(q).as_matrix()
+
     return rotation_matrix
+
 
 def rotate_with_gaitmap(data, rotation_matrix):
     """
@@ -136,8 +194,8 @@ for i, trial in enumerate(mobDataset):
 
     # Applica la rotazione aggiuntiva utilizzando gaitmap
     final_rotated_df = rotate_with_gaitmap(aligned_df, additional_rotation.as_matrix())
-    print(f"Exercise: {exercise_name} - Dati accelerometrici ruotati finali:\n", final_rotated_df[['acc_x', 'acc_y', 'acc_z']]) 
-
+    print(f"Exercise: {exercise_name} - Dati accelerometrici ruotati finali:\n", final_rotated_df[['acc_x', 'acc_y', 'acc_z']])
+    
     # Plot the data
     plot_data(dataset[['acc_x', 'acc_y', 'acc_z']], aligned_df[['acc_x', 'acc_y', 'acc_z']], f"(Exercise: {exercise_name})")
 
