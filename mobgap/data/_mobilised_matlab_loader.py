@@ -10,6 +10,7 @@ from typing import (
     TypedDict,
     TypeVar,
     Union,
+    cast,
 )
 
 import joblib
@@ -21,6 +22,7 @@ from tqdm.auto import tqdm
 
 import mobgap
 from mobgap._docutils import make_filldoc
+from mobgap.consts import GRAV_MS2
 from mobgap.data.base import (
     BaseGaitDatasetWithReference,
     ParticipantMetadata,
@@ -148,8 +150,8 @@ class MobilisedParticipantMetadata(ParticipantMetadata):
 
     """
 
-    foot_length_cm: float
-    weight_kg: float
+    foot_length_cm: Optional[float]
+    weight_kg: Optional[float]
     handedness: Optional[Literal["left", "right"]]
     indip_data_used: Optional[str]
     sensor_attachment_su: Optional[str]
@@ -586,7 +588,7 @@ def _parse_single_sensor_data(
     else:
         parsed_data.index.name = "samples"
     # Convert acc columns to m/s-2
-    parsed_data[["acc_x", "acc_y", "acc_z"]] *= 9.81
+    parsed_data[["acc_x", "acc_y", "acc_z"]] *= GRAV_MS2
 
     return parsed_data
 
@@ -1153,15 +1155,20 @@ class BaseGenericMobilisedDataset(BaseGaitDatasetWithReference):
         final_dict: MobilisedParticipantMetadata = {
             "sensor_height_m": meta_data["SensorHeight"] / 100,
             "height_m": meta_data["Height"] / 100,
-            "weight_kg": meta_data["Weight"],
             "cohort": self._get_cohort(),
-            "handedness": {"L": "left", "R": "right"}.get(meta_data["Handedness"], None),
-            "foot_length_cm": meta_data["FootSize"],
+            "handedness": cast(
+                Optional[Literal["left", "right"]], {"L": "left", "R": "right"}.get(meta_data.get("Handedness"), None)
+            ),
+            "foot_length_cm": meta_data.get("FootSize"),
+            "weight_kg": meta_data.get("Weight"),
             "indip_data_used": meta_data.get("INDIP_DataUsed"),
             "sensor_attachment_su": meta_data.get("SensorAttachment_SU"),
             "sensor_type_su": meta_data.get("SensorType_SU"),
-            "walking_aid_used": {0: False, 1: True}.get(int(meta_data["WalkingAid_01"]), None),
+            "walking_aid_used": {0: False, 1: True}.get(int(meta_data.get("WalkingAid_01", -1)), None),
         }
+
+        # Sort dict by key to ensure consistent order
+        final_dict = dict(sorted(final_dict.items()))
         return final_dict
 
     @property
