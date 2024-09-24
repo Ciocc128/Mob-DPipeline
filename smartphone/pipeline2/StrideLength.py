@@ -7,6 +7,8 @@ from mobgap.stride_length import SlZijlstra
 from mobgap.pipeline import GsIterator
 from mobgap.utils.conversions import to_body_frame
 from mobgap.initial_contacts import refine_gs
+from smartphone.pipeline2.riorientamento import process_and_rotate_dataset  # Importing the reorientation function
+
 
 """
 
@@ -79,6 +81,7 @@ for trial in mobDataset[3:]:
     reference_wbs = short_trial.reference_parameters_.wb_list 
     ref_ics = short_trial.reference_parameters_.ic_list 
     sampling_rate = short_trial.sampling_rate_hz 
+    # infoForAlgo must be in the same directory as the folder "Result final", not in "Standarized" folder
     sensor_height = short_trial.participant_metadata["sensor_height_m"]
     iterator = GsIterator()
 
@@ -101,11 +104,17 @@ for trial in mobDataset[3:]:
             sampling_rate_hz=sampling_rate
         )
 
+        if hasattr(stride_length_result, 'stride_length_per_sec_'):
+            print(stride_length_result.stride_length_per_sec_)
+        else:
+            print("Stride length per second not found in the result")
+
         # Store the stride length per second
         result.stride_length_per_sec = stride_length_result.stride_length_per_sec_
 
     # Extract detected stride lengths
     detected_stride_lengths = iterator.results_.stride_length_per_sec
+    print(detected_stride_lengths)
 
     # Extract time_measure, test, and trial values
     params = trial.get_params()
@@ -134,7 +143,7 @@ for trial in mobDataset[3:]:
         data_output["StrideLength_Output"][time_measure][test][trial_name]["SU"]["LowerBack"]["StrideLength"] = {}
 
     # Collect stride lengths per second
-    stride_lengths_per_sec = detected_stride_lengths["stride_length_per_sec"].tolist()
+    stride_lengths_per_sec = detected_stride_lengths["stride_length_m"].tolist()
 
     # Add stride lengths to JSON structure
     data_output["StrideLength_Output"][time_measure][test][trial_name]["SU"]["LowerBack"]["StrideLength"] = {
