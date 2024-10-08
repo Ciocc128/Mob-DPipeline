@@ -8,6 +8,24 @@ import matplotlib.pyplot as plt
 from scipy.signal import hilbert
 import os
 
+"""
+Riorientamento.py
+
+This script provides utility functions for processing and realigning inertial measurement unit (IMU) data,
+such as accelerometer and gyroscope signals, typically used in gait analysis or human motion tracking.
+
+Key functionalities:
+1. **Stationary Detection**: Detects the longest stationary period in gyroscope data based on the signal's envelope and moving average.
+2. **Rotation Matrix Calculation**: Calculates the rotation matrix needed to align the accelerometer data with the gravity vector.
+3. **Data Reorientation**: Reorients accelerometer and gyroscope data using the calculated rotation matrix.
+4. **Visualization**: Provides plotting functions to visualize the aligned data and stationary detection results.
+5. **Modular Use**: Functions are designed to be reusable and callable from other Python scripts.
+
+Usage:
+- This file can be run standalone to process IMU data and visualize the reoriented signals.
+- Alternatively, the functions can be imported and used in other scripts for modular reorientation and data processing tasks.
+"""
+
 # --- Utility Functions ---
 
 def unit(vector):
@@ -146,7 +164,7 @@ def calc_R(acc_data):
     gravity_local_ideal = np.array([1, 0, 0])
 
     # Detect the stationary period and compute the real gravity vector
-    stationary_data = detect_stationary_period(acc_data, visualize=False) # visualize=True if you want to run this script
+    stationary_data = detect_stationary_period(acc_data, visualize=True) # visualize=True if you want to run this script
     gravity_local_real = unit(np.mean(stationary_data, axis=0))
 
     # Log the detected gravity vector for verification
@@ -282,12 +300,12 @@ if __name__ == "__main__":
         parent_folders_as_metadata=None
     )
 
-    # Process the data as usual
+    # Process the data
     for i, trial in enumerate(mobDataset, start=1):
         short_trial = trial 
         imu_data = short_trial.data_ss 
 
-        # Process the data as usual
-        reoriented_data = process_and_rotate_dataset(imu_data, f"Trial {i} Reorientation", visualize=False) # visualize=True if you want to run this script
+
+        reoriented_data = process_and_rotate_dataset(imu_data, f"Trial {i} Reorientation", visualize=True) # visualize=True if you want to run this script
 
 # %%
