@@ -7,7 +7,7 @@ from gaitmap.utils.rotations import rotate_dataset
 import matplotlib.pyplot as plt
 from scipy.signal import hilbert
 import os
-
+#TODO remove the reorientation matrix from SMP framework to MOBGAP framwork and mantain anly the part of alligning to the gravity vector.
 # --- Utility Functions ---
 
 def unit(vector):
@@ -269,8 +269,8 @@ def process_and_rotate_dataset(dataset, exercise_name, visualize=False):
     return final_rotated_df
 
 if __name__ == "__main__":
-    subject_id = "0005"
-    data_path = f'C:/Users/giorg/OneDrive - Politecnico di Torino/Giorgio Trentadue/Acquisizioni/Test/{subject_id}/In Lab/Results final/'
+    subject_id = "003"
+    data_path = f'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/{subject_id}/'
 
     # Load the dataset using GenericMobilisedDataset
     mobDataset = GenericMobilisedDataset(
@@ -288,6 +288,6 @@ if __name__ == "__main__":
         imu_data = short_trial.data_ss 
 
         # Process the data as usual
-        reoriented_data = process_and_rotate_dataset(imu_data, f"Trial {i} Reorientation", visualize=False) # visualize=True if you want to run this script
+        reoriented_data = process_and_rotate_dataset(imu_data, f"Trial {i} Reorientation", visualize=True) # visualize=True if you want to run this script
 
 # %%

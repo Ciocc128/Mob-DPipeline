@@ -25,7 +25,10 @@ from joblib import Memory
 
 # Define path to TVS dataset
 # dataset_path = "C:/Users/paolo/OneDrive - Politecnico di Torino/prova stefano/Projects/Mobilise-D/Data/tvs_dataset/tvs_dataset"
-dataset_path = "/home/arne/Documents/repos/private/mobilised_tvs_data/tvs_dataset/"
+#dataset_path = "/home/arne/Documents/repos/private/mobilised_tvs_data/tvs_dataset/"
+
+# Define path to data
+dataset_path = r"C:\Users\ac4gt\Desktop\Mob-DPipeline\example_data\data"
 
 
 # In[3]:
