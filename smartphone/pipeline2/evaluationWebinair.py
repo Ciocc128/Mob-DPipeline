@@ -90,6 +90,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from IPython.display import display
 import seaborn as sns
+import os
 
 # Define subject ID and data path
 subject_id = "003"
@@ -326,3 +327,17 @@ plt.show()
 
 
 # %%
+# Ensure the 'results' subfolder exists
+results_folder = os.path.join(data_path, "results")
+if not os.path.exists(results_folder):
+    os.makedirs(results_folder)
+
+# Save gs_matches_with_errors to CSV
+gs_matches_with_errors_filepath = os.path.join(results_folder, f"full_pipeline_subject_{subject_id}.csv")
+gs_matches_with_errors.to_csv(gs_matches_with_errors_filepath)
+
+# Save agg_results to CSV
+agg_results_filepath = os.path.join(results_folder, f"full_pipeline_agg_results_subject_{subject_id}.csv")
+agg_results.to_csv(agg_results_filepath)
+
+print(f'Results saved to {results_folder}')
