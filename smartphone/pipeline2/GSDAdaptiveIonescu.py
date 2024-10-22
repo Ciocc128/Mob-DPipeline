@@ -4,11 +4,11 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from mobgap.data import GenericMobilisedDataset
-from mobgap.gsd import GsdAdaptiveIonescu
+from mobgap.gait_sequences import GsdAdaptiveIonescu
 
 # Define subject ID and data path
-subject_id = "005"
-data_path = f'C:/Users/giorg/OneDrive - Politecnico di Torino/Giorgio Trentadue/Acquisizioni/{subject_id}/In Lab/Results final/'
+subject_id = "003"
+data_path = f'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/{subject_id}/'
 
 # Load the dataset
 mobDataset = GenericMobilisedDataset(
@@ -130,4 +130,4 @@ with open(json_file_path, "w") as json_file:
 
 print(f"Data saved to {json_file_path}")
 
-# %%
+#

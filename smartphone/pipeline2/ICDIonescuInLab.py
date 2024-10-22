@@ -42,12 +42,13 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from mobgap.data import GenericMobilisedDataset
-from mobgap.icd import IcdIonescu
+from mobgap.initial_contacts import IcdIonescu
 from mobgap.pipeline import GsIterator
+from mobgap.utils.conversions import to_body_frame
 
 # Define subject ID and data path
-subject_id = "005"
-data_path = f'C:/Users/giorg/OneDrive - Politecnico di Torino/Giorgio Trentadue/Acquisizioni/{subject_id}/In Lab/Results final/'
+subject_id = "003"
+data_path = f'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/{subject_id}/'
 
 # Load the dataset
 mobDataset = GenericMobilisedDataset(
@@ -76,7 +77,7 @@ def convert_to_native_types(obj):
 # Process the trials from the 4th to the last one
 for trial in mobDataset[3:]:
     short_trial = trial
-    imu_data = short_trial.data_ss
+    imu_data = to_body_frame(short_trial.data_ss)
     reference_wbs = short_trial.reference_parameters_.wb_list
     ref_ics = short_trial.reference_parameters_.ic_list
     iterator = GsIterator()
@@ -146,11 +147,11 @@ for trial in mobDataset[3:]:
     print("\nPython Output:\n\n", detected_ics)
 
     # Plotting
-    imu_data.reset_index(drop=True).plot(y="acc_x")
-    plt.plot(ref_ics["ic"], imu_data["acc_x"].iloc[ref_ics["ic"]], "o", label="ref")
+    imu_data.reset_index(drop=True).plot(y = "acc_is")
+    plt.plot(ref_ics["ic"], imu_data["acc_is"].iloc[ref_ics["ic"]], "o", label="ref")
     plt.plot(
         detected_ics["ic"],
-        imu_data["acc_x"].iloc[detected_ics["ic"]],
+        imu_data["acc_is"].iloc[detected_ics["ic"]],
         "x",
         label="icd_ionescu_py",
     )
