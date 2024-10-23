@@ -1,3 +1,22 @@
+"""
+Cadence Evaluation Script
+
+This script performs an evaluation of cadence detection based on initial contacts (IC) extracted from sensor data for a specific subject. 
+It compares the detected cadence against reference data using various error metrics and aggregates the results.
+
+Main Steps:
+1. Load the dataset for the specified subject from the given data path.
+2. Iterate through each trial and compute cadence from detected initial contacts using a cadence calculation method (`CadFromIc`).
+3. Compare the computed cadence with the reference cadence (from the dataset) and calculate the absolute and relative errors.
+4. Aggregate the errors (mean, standard deviation) and apply a custom operation (Intraclass Correlation Coefficient, ICC).
+5. Display the calculated errors and aggregated results.
+6. Save the results (cadence errors and aggregated metrics) to CSV files in a results folder.
+
+Error Metrics Calculated:
+- Absolute Error: The absolute difference between the detected cadence and the reference cadence.
+- Relative Error: The relative difference between the detected cadence and the reference cadence.
+- Intraclass Correlation Coefficient (ICC): Used to evaluate the reliability and agreement between the detected and reference cadence.
+"""
 #%%
 from mobgap.cadence import CadFromIc
 from mobgap.data import GenericMobilisedDataset
@@ -5,6 +24,7 @@ from mobgap.pipeline import GsIterator
 from mobgap.initial_contacts import refine_gs
 from mobgap.utils.conversions import to_body_frame
 import pandas as pd
+import os
 from IPython.display import display
 from mobgap.pipeline.evaluation import ErrorTransformFuncs as E
 from mobgap.utils.df_operations import apply_transformations, apply_aggregations, CustomOperation
@@ -97,4 +117,15 @@ agg_results = (
 )
 
 display(agg_results)
-# %%
+# %% Save the results
+# Create a results folder if it doesn't exist
+results_folder = os.path.join(data_path, "results")
+if not os.path.exists(results_folder):
+    os.makedirs(results_folder)
+
+cad_with_errors_path = os.path.join(results_folder, f"cadence_errors_subject_{subject_id}.csv")
+combined_cad_with_errors.to_csv(cad_with_errors_path)
+
+agg_results_path = os.path.join(results_folder, f"cadence_agg_results_subject_{subject_id}.csv")
+agg_results.to_csv(agg_results_path)
+

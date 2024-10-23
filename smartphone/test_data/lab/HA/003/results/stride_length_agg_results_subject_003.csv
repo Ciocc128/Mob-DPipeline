@@ -1,0 +1,6 @@
+metric,origin,aggregation,values
+stride_length_m,abs_error,mean,2.376662530708859
+stride_length_m,abs_error,std,0.2919983808340985
+stride_length_m,all,icc,"(-0.8876254818246119, array([-0.96, -0.66]))"
+stride_length_m,rel_error,mean,1.474325718131344
+stride_length_m,rel_error,std,0.09001591328270296
