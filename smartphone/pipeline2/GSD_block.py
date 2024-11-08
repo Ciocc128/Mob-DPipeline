@@ -94,7 +94,7 @@ all_ref_parameters = {}
 # Call the analysis function
 run_gsd_analysis(plot_gsd=True)
 #%% Concatenate reference parameters and per-walking bout parameters
-index_names = ["time_measure", "test", "trial", "wb_id"]
+index_names = ["cohort", "participant_id", "time_measure", "test", "trial", "wb_id"]
 all_ref_parameters = pd.concat(all_ref_parameters, names=index_names)
 all_per_wb_parameters = pd.concat(per_wb_paras, names=index_names)
 
@@ -184,3 +184,5 @@ print(f"GS matches with errors saved to {csv_file_path}")
 agg_csv_file_path = os.path.join(results_folder, f"gsd_agg_results_subject_{subject_id}.csv")
 agg_results.to_csv(agg_csv_file_path)
 print(f"Aggregated results saved to {agg_csv_file_path}")
+
+# TODO valutare anche le metriche con TP FP FN ecc..
