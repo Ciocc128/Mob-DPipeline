@@ -62,7 +62,7 @@ mobDataset = GenericMobilisedDataset(
     reference_system='INDIP',
     measurement_condition='laboratory',
     reference_para_level='wb',
-    parent_folders_as_metadata=None
+    parent_folders_as_metadata=["cohort", "participant_id"]
 )
 
 # Process the trials from the 4th to the last one

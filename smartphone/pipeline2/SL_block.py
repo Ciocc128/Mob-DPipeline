@@ -41,42 +41,45 @@ mobDataset = GenericMobilisedDataset(
     reference_system='INDIP',
     measurement_condition='laboratory',
     reference_para_level='wb',
-    parent_folders_as_metadata=["cohorts", "participant_id"]
+    parent_folders_as_metadata=["cohort", "participant_id"]
 )
 
 all_detected_sl = {}
 all_ref_sl = {}
 
-# initialize the iterator
-iterator = GsIterator()
+sl_calculator = SlZijlstra(
+    **SlZijlstra.PredefinedParameters.step_length_scaling_factor_ms_ms
+
+)
 
 for trial in mobDataset[3:]:
-    imu_data = to_body_frame(trial.data_ss)
+    imu_data = trial.data_ss
     sampling_rate_hz = trial.sampling_rate_hz
-    reference_gs = trial.reference_parameters_.wb_list
+    reference_wbs = trial.reference_parameters_.wb_list
     reference_ic = trial.reference_parameters_.ic_list
     sensor_height = trial.participant_metadata["sensor_height_m"]
+    display(trial.participant_metadata_as_df)
 
-    sl_calculator = SlZijlstra(
-        **SlZijlstra.PredefinedParameters.step_length_scaling_factor_ms_ms
-    )
+    # initialize the iterator
+    iterator = GsIterator()
 
-    for (gs, data), r in iterator.iterate(imu_data, reference_gs):
-        r.ic_list = reference_ic.loc[gs.id]
-        refined_gs, refined_ic_list = refine_gs(r.ic_list)
-        with iterator.subregion(refined_gs) as ((_, refined_gs_data), rr):
-            sl = sl_calculator.clone().calculate(
-                data=to_body_frame(refined_gs_data),
-                initial_contacts=refined_ic_list,
-                sensor_height_m=sensor_height,
-                sampling_rate_hz=sampling_rate_hz,
-            )
-            rr.stride_length_per_sec = sl.stride_length_per_sec_
+    # Check if the iterator yields anything
+    for (gs, data), r in iterator.iterate(imu_data, reference_wbs):
+        refined_gs, refined_ic_list = refine_gs(reference_ic.loc[gs.id])
+
+        sl = sl_calculator.clone().calculate(
+            data=to_body_frame(data),
+            initial_contacts=refined_ic_list,
+            sensor_height_m=sensor_height,
+            sampling_rate_hz=sampling_rate_hz,
+        )
+        r.stride_length_per_sec = sl.stride_length_per_sec_
 
     all_detected_sl[trial.group_label] = iterator.results_.stride_length_per_sec.groupby("wb_id").mean()
-    all_ref_sl[trial.group_label] = reference_gs[["avg_stride_length_m"]].rename(
-        columns={"avg_stride_length_m": "stride_length_m"}
+    all_ref_sl[trial.group_label] = reference_wbs[["avg_stride_length_m"]].rename(
+        columns= {"avg_stride_length_m": "stride_length_m"}
     )
+
 
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
 all_detected_sl = pd.concat(all_detected_sl, names=index_names)
@@ -94,7 +97,7 @@ combined_sl = {
 combined_sl = pd.concat(combined_sl, axis=1).reorder_levels((1, 0), axis=1)
 
 errors = [
-    ("stride_length_m", [E.abs_error, E.rel_error, E.abs_rel_error])
+    ("stride_length_m", [E.error, E.abs_error, E.rel_error])
 ]
 
 sl_errors = apply_transformations(combined_sl, errors)
@@ -104,9 +107,9 @@ multiindex_column_order = [
     # 'stride_length_m' columns
     ('stride_length_m', 'detected'),
     ('stride_length_m', 'reference'),
+    ('stride_length_m', 'error'),
     ('stride_length_m', 'abs_error'),
     ('stride_length_m', 'rel_error'),
-    ('stride_length_m', 'abs_rel_error'),
 ]
 
 combined_sl_with_errors = combined_sl_with_errors.reindex(columns=multiindex_column_order)
@@ -115,10 +118,10 @@ display(combined_sl_with_errors)
 # %% Aggregate errors
 
 aggregation = [
-    *((("stride_length_m", o), ["mean", "std"]) for o in ["error", "abs_error", "rel_error"]),
+    *((("stride_length_m", o), ["mean", "std", A.quantiles]) for o in ["detected", "reference", "error", "abs_error", "rel_error"]),
     *(
         CustomOperation(identifier=m, function=A.icc, column_name=(m, "all"))
-        for m in ["stride_length_m", "cadence_spm"]
+        for m in ["stride_length_m"]
     )
 ]
 
