@@ -70,9 +70,9 @@ def plot_acc_with_wb_and_ics(acc_x, reference_wbs, ref_ics, title="Accelerometer
     plt.legend()
     plt.show()
 
-# Define subject and data paths
-subject_id = "0005"
-data_path = f'C:/Users/giorg/OneDrive - Politecnico di Torino/Giorgio Trentadue/Acquisizioni/Test/{subject_id}/In Lab/Results final/'
+# Define subject ID and data path
+subject_id = "003"
+data_path = f'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/{subject_id}/'
 
 # Load the dataset
 mobDataset = GenericMobilisedDataset(
@@ -116,12 +116,12 @@ for trial in mobDataset[3:]:
     sensor_height = short_trial.participant_metadata["sensor_height_m"]
     iterator = GsIterator()
 
-    # Step 1: Reorient the IMU data
+    """# Step 1: Reorient the IMU data
     reoriented_data = process_and_rotate_dataset(imu_data, exercise_name=f"{test} {trial_name}", visualize=True)
 
     # Step 2: Plot the reoriented data for debugging
     acc_x = reoriented_data['acc_x'].values
-    plot_acc_with_wb_and_ics(acc_x, reference_wbs, ref_ics, f"{test} {trial_name}: Vertical Acceleration with WB and IC")
+    plot_acc_with_wb_and_ics(acc_x, reference_wbs, ref_ics, f"{test} {trial_name}: Vertical Acceleration with WB and IC")"""
 
     # Step 3: Initialize the stride length calculator
     stride_length_calculator = SlZijlstra(
@@ -129,11 +129,11 @@ for trial in mobDataset[3:]:
     )
 
     # Step 4: Iterate over gait sequences and refine them using initial contacts
-    for (gs, data), result in iterator.iterate(reoriented_data, reference_wbs):
+    for (gs, data), result in iterator.iterate(imu_data, reference_wbs):
         refined_gs, refined_ic_list = refine_gs(ref_ics.loc[gs.id])
 
         print(f"\nRefined Gait Sequence: {refined_gs}")
-        print(f"Length of Reoriented Data: {len(reoriented_data)}")
+        print(f"Length of Reoriented Data: {len(imu_data)}")
         print(f"Refined IC List: {refined_ic_list}")
 
         # Step 5: Calculate stride length for the refined gait sequence

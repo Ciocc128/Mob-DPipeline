@@ -256,7 +256,7 @@ display(gs_matches_with_errors)
 # I can also pass the default Mobilise-D aggregation configuration
 
 agg_results = (
-    apply_aggregations(gs_matches_with_errors, get_default_error_aggregations(), missing_columns="skip")
+    apply_aggregations(gs_matches_with_errors.dropna(), get_default_error_aggregations(), missing_columns="skip")
     .rename_axis(index=["aggregation", "metric", "origin"])
     .reorder_levels(["metric", "origin", "aggregation"])
     .sort_index(level=0)

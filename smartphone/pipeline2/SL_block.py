@@ -13,6 +13,8 @@ from mobgap.pipeline.evaluation import ErrorTransformFuncs as E
 from mobgap.utils.df_operations import apply_transformations, apply_aggregations, CustomOperation
 from mobgap.pipeline.evaluation import CustomErrorAggregations as A
 
+
+
 def plot_acc_with_wb_and_ics(acc_x, reference_wbs, ref_ics, title="Accelerometer Signal with Reference WB and ICs"):
     plt.figure(figsize=(12, 6))
     plt.plot(acc_x, label="Vertical Acc (acc_x)", color='blue')

@@ -41,7 +41,7 @@ mobDataset = GenericMobilisedDataset(
     reference_system='INDIP',
     measurement_condition='laboratory',
     reference_para_level='wb',
-    parent_folders_as_metadata=["cohorts", "participant_id"]
+    parent_folders_as_metadata=["cohort", "participant_id"]
 )
 
 def calculate_icd_ionescu_output(single_test_data):

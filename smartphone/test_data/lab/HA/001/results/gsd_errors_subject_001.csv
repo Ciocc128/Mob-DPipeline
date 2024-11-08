@@ -1,0 +1,12 @@
+,,,,start,start,start,end,end,end
+,,,,detected,reference,abs_error,detected,reference,abs_error
+time_measure,test,trial,match_id,,,,,,
+TimeMeasure1,Test4,Trial1,0,1525,1492,33,2975,2873,102
+TimeMeasure1,Test4,Trial2,0,1152,1069,83,2440,2464,24
+TimeMeasure1,Test4,Trial3,0,1425,1356,69,2727,2705,22
+TimeMeasure1,Test5,Trial1,0,850,858,8,1735,1716,19
+TimeMeasure1,Test5,Trial2,0,1155,1125,30,2097,2046,51
+TimeMeasure1,Test5,Trial3,0,1012,947,65,1865,1785,80
+TimeMeasure1,Test7,Trial1,0,1052,1068,16,8410,8384,26
+TimeMeasure1,Test7,Trial2,0,1037,1050,13,8432,8465,33
+TimeMeasure1,Test7,Trial3,0,1075,1091,16,8880,8930,50
