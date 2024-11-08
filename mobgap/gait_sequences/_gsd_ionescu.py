@@ -4,10 +4,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from intervaltree import IntervalTree
+from numba import njit
 from scipy.signal import find_peaks, hilbert
 from typing_extensions import Self, Unpack
 
 from mobgap._docutils import make_filldoc
+from mobgap._utils_internal.misc import timed_action_method
 from mobgap.consts import BF_ACC_COLS, GRAV_MS2, SF_ACC_COLS
 from mobgap.data_transform import (
     CwtFilter,
@@ -81,6 +83,7 @@ class _BaseGsdIonescu(BaseGsDetector):
     def _find_step_candidates(self, acc_norm: np.ndarray, sampling_rate_hz: float) -> tuple:
         raise NotImplementedError()
 
+    @timed_action_method
     @base_gsd_docfiller
     def detect(self, data: pd.DataFrame, *, sampling_rate_hz: float, **_: Unpack[dict[str, Any]]) -> Self:
         """%(detect_short)s.
@@ -201,6 +204,7 @@ class GsdIonescu(_BaseGsdIonescu):
         Each row corresponds to a single gs.
     filtered_signal_
         The filtered acceleration norm used for step detection.
+    %(perf_)s
 
     Notes
     -----
@@ -329,6 +333,7 @@ class GsdAdaptiveIonescu(_BaseGsdIonescu):
         This is either the adaptive threshold or the fallback threshold if no active periods were detected.
     adaptive_threshold_success_
         A boolean indicating whether the adaptive threshold estimation was successful.
+    %(perf_)s
 
     Notes
     -----
@@ -556,11 +561,14 @@ def active_regions_from_hilbert_envelop(sig: np.ndarray, smooth_window: int, dur
     return active.astype(bool)
 
 
+@njit(cache=True)
 def _find_pulse_train_end(x: np.ndarray, step_threshold: float) -> np.ndarray:
     start_val = x[0]
-    # We already know that the first two values belong to the pulse train, as this is determined by the caller so we
-    # start everything at index 1
-    for n_steps, (current_val, next_val) in enumerate(zip(x[1:], x[2:]), start=1):
+
+    for ic_idx, (current_val, next_val) in enumerate(zip(x[1:], x[2:])):
+        # We already know that the first two values belong to the pulse train, as this is determined by the caller so we
+        # start everything at index 1
+        n_steps = ic_idx + 1
         # We update the threshold to be the mean step time + the step threshold
         # Note: The original implementation uses effectively n_steps + 1 here, which likely a bug, as it counts the
         # number of pulses within the pulse train and not the number of distances between pulses.
@@ -570,6 +578,7 @@ def _find_pulse_train_end(x: np.ndarray, step_threshold: float) -> np.ndarray:
     return x
 
 
+@njit(cache=True)
 def find_pulse_trains(
     x: np.ndarray, initial_distance_threshold_samples: float, step_threshold_margin: float
 ) -> np.ndarray:
@@ -590,9 +599,10 @@ def find_pulse_trains(
             i += 1
 
     if len(start_ends) == 0:
-        return np.array([]).reshape(0, 2)
+        return np.empty((0, 2), dtype=np.int32)
 
-    return np.array(start_ends)
+    start_ends_array = np.array(start_ends, dtype=np.int32)
+    return start_ends_array
 
 
 def find_intersections(intervals_a: np.ndarray, intervals_b: np.ndarray) -> np.ndarray:

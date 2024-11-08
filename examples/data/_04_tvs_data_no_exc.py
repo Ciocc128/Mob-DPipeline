@@ -15,7 +15,7 @@ This makes it a valuable resource for the development and validation of algorith
 The dataset was already used extensivly to benchmark the Mobilise-D algorithms individually [2]_ and in
 combination as a pipeline [3]_.
 
-The dataset is published on Zenodo and can be accessed here: (TODO: Add link)
+The dataset is published on Zenodo and can be accessed here: https://zenodo.org/records/13899386
 
 The recommended way to work with the dataset is to use this library and the provided classes to load the data.
 This will ensure that the data is loaded in a consistent way and that the data is correctly preprocessed.
@@ -61,12 +61,14 @@ This example demonstrate how to do this.
 import os
 from pathlib import Path
 
+from mobgap.utils.misc import get_env_var
+
 if "MOBGAP_TVS_DATASET_PATH" not in os.environ:
     raise ValueError(
         "Please set the environmental variable MOBGAP_TVS_DATASET_PATH to the path of the TVS dataset."
     )
 
-dataset_path = Path(os.getenv("MOBGAP_TVS_DATASET_PATH"))
+dataset_path = Path(get_env_var("MOBGAP_TVS_DATASET_PATH").strip('"'))
 
 # %%
 # Load the Dataset
@@ -106,8 +108,17 @@ labdata
 
 # %%
 # On the remaining data, we can easily filter by all columns that are in the index.
-# For example, we could filter for only Test 11 (simulated activities of daily living) and Test 5 (straight walking).
+# For example, we could filter for only Test 11 (simulated activities of daily living) and Test 5
+# (straight walking comfortable).
 test_subset = labdata.get_subset(test=["Test5", "Test11"])
+test_subset
+
+# %%
+# Note, that we can either filter by test or by test-name (or `test_name_pretty`).
+# For the Free-Living dataset, the columns are named `recording` and `recording_name`.
+test_subset = labdata.get_subset(
+    test_name=["WalkComfortable", "DailyActivities"]
+)
 test_subset
 
 # %%

@@ -4,13 +4,66 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) (+ the Migration Guide),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.9.0] - Unreleased
+## [Unreleased]
+
+### SCIENTIFIC CHANGES
+
+- The GsdIluz algorithm was reworked. This fixes some discrepancies with the original implementation and should improve
+  the results in many cases.
+  We now also provide a version of the original peak detection algorithm that was used in the matlab implementation.
+  This can be used by setting the `use_original_peak_detection` parameter to `True`.
+  (https://github.com/mobilise-d/mobgap/pull/182)
+
+### Added
+- We added first scripts for the revalidation.
+  This includes a script to extract the old results and put them into files the new evaluation pipeline can read.
+  Further, we have a first sceleton for what the gsd-revalidation could look like.
+  (https://github.com/mobilise-d/mobgap/pull/182)
+- All pipelines now pass much more metadata to the algorithms action methods.
+  This should make it easier to implement algorithms that need more context.
+  At the moment this is only used in the `DummyAlgorithm` to load existing results based on the participant and test.
+  For this to work across all algorithms, we had to change some logic in the `LrcUllrich` algorithm to selectively 
+  parse the kwargs that it needs.
+  (https://github.com/mobilise-d/mobgap/pull/182)
+
+
+### Removed
+
+- In anticipation of the tpcp>2.0 update, we removed the `score` methods from all pipelines.
+  You now need to provide the scorer directly to the MetaPipelines/Optimizers.
+  (https://github.com/mobilise-d/mobgap/pull/182)
+
+
+## [0.10.0] - 2024-10-22
+
+### Added
+- Added a simple way to add performance (as in "time algo needs to run") tracking to algorithms
+- Performance values are now reported by the GSD algorithms and the full pipelines via the `perf_` attribute.
+- The TVS datasets now have two new columns `{test/recording}_name` and `{test/recording}_name_pretty` that have easier
+  to read names for the tests and recordings.
+
+### Changed
+- Swapped out the peak detection per window in GSD Iluz to a custom vectorized one that can be jit compiled.
+  This provides a 2-3x speedup for large inputs.
+- Critical path in GSD-Ionesco is now jit compiled.
+
+### For Developers
+
+- We now support adding a `.env` file to the root of the project to set environment variables and have them loaded
+  automatically when running the tests or examples for the TVS dataset.
+  When test depend on env vars, use the `mobgap.misc.get_env_var` function to access them.
+
+## [0.9.0] - 2024-10-21
 
 ### Changed
 - The `calculate_matched_gsd_performance_metrics` function now always return the error metrics that depend on TN 
   samples, not just when TN samples exist.
   This way the output structure is consistent, and we can avoid bugs in scorer functions, where some datapoints might
   unexpectedly return a different set of error metrics.
+- The official script to aggregate DMOs, now correctly converts stride length values to cm and variance values to cm^2.
+  Note, that the internal function within mobgap, does not do this conversion automatically, as we use different units
+  in mobgap internally. If you need to match the official script, you have to do this conversion manually.
+  see `examples/aggregation/_99_cvs_agg_pipeline_no_exc.py`.
 
 ### Fixed
 - The zero division hint for error functions did not properly replace the value with NaN, when the result of the 

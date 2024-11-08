@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mobgap"
-version = "0.8.0"
+version = "0.10.0"
 description = "A Python implementation of the Mobilise-D algorithm pipeline for gait analysis using IMU worn at the lower back."
 authors = [
     "Arne Küderle <arne.kuederle@fau.de>",
@@ -19,7 +19,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-tpcp = "^1.0.0"
+tpcp = ">=1.0.0"
 pandas = ">=2.2.0"
 scipy = ">=1.11.2"
 numpy = ">=1.25.2"
@@ -32,6 +32,7 @@ numba = ">=0.60.0"
 openpyxl = "^3.1.5"
 gaitmap = "^2.5.1"
 pingouin = "^0.5.5"
+python-dotenv = ">=1.0.1"
 
 [tool.poetry.extras]
 all = ["openpyxl", "pingouin"]
