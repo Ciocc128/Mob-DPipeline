@@ -1,0 +1,2 @@
+participant,precision,recall,f1_score,tp,fp,fn
+006,0.6153846153846154,0.6666666666666666,0.64,8,5,4
