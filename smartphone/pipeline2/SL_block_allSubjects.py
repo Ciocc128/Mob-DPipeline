@@ -103,7 +103,8 @@ def process_all_participants(base_path):
     return all_detected_combined, all_reference_combined
 
 # Define the base directory containing participant folders
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
 
 # Process all participants and get the concatenated results
 all_detected_sl, all_ref_sl = process_all_participants(base_dir)
