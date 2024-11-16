@@ -1,0 +1,8 @@
+metric,origin,aggregation,values
+ic,abs_error,mean,63.45476772616137
+ic,abs_error,std,21.939724313408487
+ic,all,icc,"(0.9993735663319075, array([1., 1.]))"
+ic,error,mean,63.45476772616137
+ic,error,std,21.939724313408487
+ic,rel_error,mean,0.027949870376689164
+ic,rel_error,std,0.018171100654735726

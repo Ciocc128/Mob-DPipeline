@@ -1,0 +1,6 @@
+metric,origin,aggregation,values
+cadence_spm,abs_error,mean,3.1376054060463177
+cadence_spm,abs_error,std,5.563956799256774
+cadence_spm,all,icc,"(0.952037153850345, array([0.85, 0.99]))"
+cadence_spm,rel_error,mean,-0.022766768059457095
+cadence_spm,rel_error,std,0.04280698425818459

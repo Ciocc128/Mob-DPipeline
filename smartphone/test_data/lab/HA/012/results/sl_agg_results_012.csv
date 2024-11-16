@@ -1,0 +1,14 @@
+metric,origin,aggregation,values
+stride_length_m,abs_error,mean,0.10449363745297673
+stride_length_m,abs_error,quantiles,"(0.03649690348005069, 0.20780058338760435)"
+stride_length_m,abs_error,std,0.06592567990575891
+stride_length_m,all,icc,"(0.8079143574137143, array([0.48, 0.94]))"
+stride_length_m,detected,mean,1.387834057806497
+stride_length_m,detected,quantiles,"(1.082879060140119, 1.6782749138855064)"
+stride_length_m,detected,std,0.21104805960022432
+stride_length_m,reference,mean,1.4923276952594737
+stride_length_m,reference,quantiles,"(1.2840681753545644, 1.7628149017635457)"
+stride_length_m,reference,std,0.16662887320531036
+stride_length_m,rel_error,mean,-0.07356361903013742
+stride_length_m,rel_error,quantiles,"(-0.15919565705197944, -0.025283409144153113)"
+stride_length_m,rel_error,std,0.05340165220435627
