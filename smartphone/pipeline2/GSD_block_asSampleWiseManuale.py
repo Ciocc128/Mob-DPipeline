@@ -237,8 +237,6 @@ def process_all_participants(base_path, plot_gsd=False):
                 .to_frame("values")
             )
             display(agg_results)
-            break
-
 
             # Count true positives, false positives, and false negatives
             tp_samples = len(gs_tp_fp_fn[gs_tp_fp_fn["match_type"] == "tp"])
