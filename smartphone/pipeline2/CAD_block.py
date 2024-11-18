@@ -18,10 +18,10 @@ Error Metrics Calculated:
 - Intraclass Correlation Coefficient (ICC): Used to evaluate the reliability and agreement between the detected and reference cadence.
 """
 #%%
-from mobgap.cadence import CadFromIc
+from mobgap.cadence import CadFromIc, CadFromIcDetector
 from mobgap.data import GenericMobilisedDataset
 from mobgap.pipeline import GsIterator
-from mobgap.initial_contacts import refine_gs
+from mobgap.initial_contacts import refine_gs, IcdShinImproved
 from mobgap.utils.conversions import to_body_frame
 import pandas as pd
 import os
@@ -58,13 +58,13 @@ for trial in mobDataset[3:]:
     reference_ic = trial.reference_parameters_relative_to_wb_.ic_list
     reference_gs = trial.reference_parameters_relative_to_wb_.wb_list
 
-    cad_from_ic = CadFromIc()
+    cad_from_ic = CadFromIcDetector(IcdShinImproved())
 
     for (gs, data), r in iterator.iterate(trial.data_ss, reference_gs):
         r.ic_list = reference_ic.loc[gs.id]
         refined_gs, refined_ic_list = refine_gs(r.ic_list)
         with iterator.subregion(refined_gs) as ((_, refined_gs_data), rr):
-            cad = cad_from_ic.clone().calculate(
+            cad = cad_from_ic.calculate(
                 to_body_frame(refined_gs_data),
                 initial_contacts=refined_ic_list,
                 sampling_rate_hz=trial.sampling_rate_hz,
@@ -81,13 +81,10 @@ index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
 all_detected_cad = pd.concat(all_detected_cad, names=index_names)
 all_ref_cad = pd.concat(all_ref_cad, names=index_names)
 
-display(all_detected_cad)
-display(all_ref_cad)
-# %% Error calculation
 combined_cad = {"detected": all_detected_cad, "reference": all_ref_cad}
 combined_cad = pd.concat(combined_cad, axis=1).reorder_levels((1, 0), axis=1)
 display(combined_cad)
-
+# %% Error calculation
 # error configuration
 errors = [
     ("cadence_spm", [E.abs_error, E.rel_error])

@@ -221,11 +221,3 @@ print("Global results saved:")
 print(f"Combined TP with Errors: {os.path.join(results_path, 'icd_tp_with_errors.csv')}")
 print(f"Metrics per WB: {os.path.join(results_path, 'icd_metrics_per_wb.csv')}")
 print(f"Aggregated Results: {os.path.join(results_path, 'icd_agg_results.csv')}")
-
-
-
-            
-
-
-
-# %%

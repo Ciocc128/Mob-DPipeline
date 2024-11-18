@@ -121,7 +121,7 @@ combined_sl = {
 combined_sl = pd.concat(combined_sl, axis=1).reorder_levels((1, 0), axis=1)
 
 errors = [
-    ("stride_length_m", [E.error, E.abs_error, E.rel_error])
+    ("stride_length_m", [E.abs_error, E.rel_error])
 ]
 
 sl_errors = apply_transformations(combined_sl, errors)
@@ -179,9 +179,3 @@ combined_sl_with_errors.to_csv(sl_with_errors_path)
 
 agg_results_path = os.path.join(results_folder, f"stride_length_agg_results_subject_{subject_id}.csv")
 agg_results.to_csv(agg_results_path)
-
-# %%
-
-dataset = LabExampleDataset()
-
-trial = dataset.get_subset("HA", "")

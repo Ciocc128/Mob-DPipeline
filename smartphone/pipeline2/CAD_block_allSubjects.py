@@ -11,7 +11,7 @@ It performs the following steps for each participant:
 6. Save the results (cadence errors and aggregated metrics) to CSV files in a results folder.
 """
 #%% Import necessary libraries
-from mobgap.cadence import CadFromIc
+from mobgap.cadence import CadFromIcDetector
 from mobgap.data import GenericMobilisedDataset
 from mobgap.pipeline import GsIterator
 from mobgap.initial_contacts import IcdShinImproved, refine_gs
@@ -23,7 +23,7 @@ from mobgap.pipeline.evaluation import ErrorTransformFuncs as E
 from mobgap.utils.df_operations import apply_transformations, apply_aggregations, CustomOperation
 from mobgap.pipeline.evaluation import CustomErrorAggregations as A
 
-# Helper function to calculate ICD Shin Improved output for a single trial
+"""# Helper function to calculate ICD Shin Improved output for a single trial
 def calculate_icd_shin_output(single_test_data):
     imu_data = to_body_frame(single_test_data.data_ss)
     sampling_rate_hz = single_test_data.sampling_rate_hz
@@ -34,7 +34,7 @@ def calculate_icd_shin_output(single_test_data):
         result.ic_list = IcdShinImproved().detect(data, sampling_rate_hz=sampling_rate_hz).ic_list_
 
     det_ics = iterator.results_.ic_list
-    return det_ics, imu_data
+    return det_ics, imu_data"""
 
 # Function to process a single participant using Shin IC detection
 def process_participant(participant_id, data_path):
@@ -50,23 +50,24 @@ def process_participant(participant_id, data_path):
         reference_para_level='wb',
     )
     iterator = GsIterator()
+    cad_from_ic_detector = CadFromIcDetector(IcdShinImproved())
 
     all_detected_cad = {}
     all_ref_cad = {}
 
     for trial in mobDataset[3:]:  # Process trials from the 4th one onward
         imu_data = trial.data_ss
+        reference_ic = trial.reference_parameters_relative_to_wb_.ic_list
         reference_gs = trial.reference_parameters_relative_to_wb_.wb_list
 
         # Calculate ICs using Shin Algorithm
-        detected_ics, imu_data = calculate_icd_shin_output(trial)
+        # Calculate cadence from detected IC
 
-        # Calculate cadence from detected ICs
-        cad_from_ic = CadFromIc()
-        for (gs, data), r in iterator.iterate(trial.data_ss, reference_gs):
-            refined_gs, refined_ic_list = refine_gs(detected_ics.loc[gs.id])
+        for (gs, data), r in iterator.iterate(imu_data, reference_gs):
+            r.ic_list = reference_ic.loc[gs.id]
+            refined_gs, refined_ic_list = refine_gs(r.ic_list)
             with iterator.subregion(refined_gs) as ((_, refined_gs_data), rr):
-                cad = cad_from_ic.clone().calculate(
+                cad = cad_from_ic_detector().calculate(
                     to_body_frame(refined_gs_data),
                     initial_contacts=refined_ic_list,
                     sampling_rate_hz=trial.sampling_rate_hz,
@@ -84,6 +85,7 @@ def process_participant(participant_id, data_path):
     # Error calculation
     combined_cad = {"detected": detected_df, "reference": reference_df}
     combined_cad = pd.concat(combined_cad, axis=1).reorder_levels((1, 0), axis=1)
+    display(combined_cad)
     
     errors = [("cadence_spm", [E.abs_error, E.rel_error])]
     cad_errors = apply_transformations(combined_cad, errors)
@@ -126,3 +128,5 @@ base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
 
 # Run the processing for all participants
 process_all_participants(base_dir)
+
+# %%
