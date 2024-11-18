@@ -157,7 +157,7 @@ gs_tp_fp_fn = per_trial_participant_grouper.apply(
     lambda det, ref: categorize_intervals(
         gsd_list_detected=det,
         gsd_list_reference=ref,
-        overlap_threshold=0.6, #controlla nel paper quanto overlap c'è (forse 0.8) riporto entrambi sia 0.8 che 0.6
+        overlap_threshold=overlap_th, #controlla nel paper quanto overlap c'è (forse 0.8) riporto entrambi sia 0.8 che 0.6
         multiindex_warning=False
     )
 )
@@ -266,7 +266,20 @@ agg_results = (
 # Display aggregated results
 display(agg_results)
 
+# %%
+# Funzione per troncare i valori a tre cifre decimali
+def truncate_to_three_decimals(x):
+    if isinstance(x, float):  # Applica solo ai numeri float
+        return round(x, 3)
+    elif isinstance(x, (tuple, list)):  # Se è un tuple o una lista, tronca ricorsivamente
+        return type(x)(truncate_to_three_decimals(i) for i in x)
+    return x  # Mantieni gli altri valori inalterati
 
+# Applica la funzione al DataFrame `agg_results`
+agg_results_truncated = agg_results.applymap(truncate_to_three_decimals)
+
+# Visualizza il DataFrame troncato
+display(agg_results_truncated)
 # %%
 # Prepare data for bar plots: Mean Absolute Errors
 mean_abs_errors = {
