@@ -183,8 +183,8 @@ def process_participant_sample_wise(participant_id, mobDataset, plot_gsd=False):
 #base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
 base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
 
-participant_folder = False
-#participant_folder ='011'
+#participant_folder = False
+participant_folder ='015'
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial", "wb_id"]
 participants = [participant_folder] if participant_folder else os.listdir(base_dir)
 

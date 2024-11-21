@@ -34,9 +34,10 @@ def save_results_to_folder(dataframes, participant_folder, filenames):
         df.to_csv(file_path, index=True)  # Save with index for traceability
         print(f"Saved {filename} to {file_path}")
 
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
-#participant_folder = False
-participant_folder = '011'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+participant_folder = False
+#participant_folder = '011'
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial", "wb_id"]
 participants = [participant_folder] if participant_folder else os.listdir(base_dir)
 
@@ -76,7 +77,7 @@ for participant_folder in participants:
 
         # Run pipeline and collect per-walking bout parameters
         per_wb_paras = {}
-        for trial in tqdm(mobDataset[:3]):
+        for trial in tqdm(mobDataset[3:]):
             trial.set_params
             pipe = haPipeline.clone().safe_run(trial)
             if not pipe.per_wb_parameters_.empty:
@@ -142,12 +143,17 @@ for participant_folder in participants:
             filenames=[f"ws_with_errors_{participant_folder}.csv", f"ws_agg_results_{participant_folder}.csv"]
         )
 
+        print('-----------------------------------')
+        print('\n')
+
 #%% Run if you want to process all participants
 global_results = pd.concat(all_subj_with_errors)
+print('Global walking speed with errors:')
+display(global_results)
 
 # Calculate agg_results for the global_combined_tp_with_errors
 global_aggregation = [
-    *[(("walking_speed_mps", o), ["mean", A.quantiles]) for o in ["abs_error", "abs_rel_error"]],
+    *[(("walking_speed_mps", o), ["mean", A.quantiles]) for o in ["detected", "reference","abs_error", "abs_rel_error"]],
     *[(("walking_speed_mps", o), ["mean", A.loa]) for o in ["error", "rel_error"]],
     *[CustomOperation(identifier="walking_speed_mps", function=A.icc, column_name=("walking_speed_mps", "all"))],
     CustomOperation(identifier=None, function=A.n_datapoints, column_name=("all", "all")),
@@ -161,6 +167,8 @@ global_agg_results = (
 )
 
 global_agg_results_truncated = global_agg_results.map(truncate_to_decimals)
+print('Global aggregated results:')
+display(global_agg_results_truncated)
 
 # Save the global results
 results_path = os.path.join(base_dir, "CohortResults")

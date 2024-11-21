@@ -25,6 +25,13 @@ def save_results_to_folder(dataframes, participant_folder, filenames):
         df.to_csv(file_path, index=True)  # Save with index for traceability
         print(f"Saved {filename} to {file_path}")
 
+def truncate_to_decimals(x):
+    if isinstance(x, float):  # Applica solo ai numeri float
+        return round(x, 3)
+    elif isinstance(x, (tuple, list)):  # Se è un tuple o una lista, tronca ricorsivamente
+        return type(x)(truncate_to_decimals(i) for i in x)
+    return x  # Mantieni gli altri valori inalterati
+
 #base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
 base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
 
@@ -118,9 +125,9 @@ for participant_folder in participants:
             .sort_index(level=0)
             .to_frame("values")
         )
-
+        agg_results_trunc = agg_results.map(truncate_to_decimals)
         print('Aggregated results:')
-        display(agg_results)
+        display(agg_results_trunc)
 
         # Save results for the participant
         save_results_to_folder(
@@ -152,7 +159,8 @@ global_agg_results = (
 )
 
 print('Global aggregated results:')
-display(global_agg_results)
+global_agg_results_truncated = global_agg_results.map(truncate_to_decimals)
+display(global_agg_results_truncated)
 
 # Save the global results
 results_path = os.path.join(base_dir, "CohortResults")

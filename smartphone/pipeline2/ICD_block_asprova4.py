@@ -28,6 +28,12 @@ def save_results_to_folder(dataframes, participant_folder, filenames):
         df.to_csv(file_path, index=True)  # Save with index for traceability
         print(f"Saved {filename} to {file_path}")
 
+def truncate_to_decimals(x):
+    if isinstance(x, float):  # Applica solo ai numeri float
+        return round(x, 3)
+    elif isinstance(x, (tuple, list)):  # Se è un tuple o una lista, tronca ricorsivamente
+        return type(x)(truncate_to_decimals(i) for i in x)
+    return x  # Mantieni gli altri valori inalterati
 
 # Helper function to calculate ICD Shin output for a single trial
 def calculate_icd_shin_output(single_test_data, plot):
@@ -70,7 +76,7 @@ def calculate_icd_shin_output(single_test_data, plot):
 base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
 
 participant_folder = False
-plot = True
+plot = False
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
 
 participants = [participant_folder] if participant_folder else os.listdir(base_dir)
@@ -99,7 +105,7 @@ for participant_folder in participants:
         participant_metrics_per_wb = {}
 
         for trial in mobDataset[3:]:  # Process trials from the 4th one onward skipping standing and data personalization
-            detected_ics, imu_data = calculate_icd_shin_output(trial, plot=False)
+            detected_ics, imu_data = calculate_icd_shin_output(trial, plot)
             reference_ics = trial.reference_parameters_.ic_list
 
             # Calculate matches_per_wb and metrics_per_wb for each trial
