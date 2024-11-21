@@ -180,7 +180,9 @@ def process_participant_sample_wise(participant_id, mobDataset, plot_gsd=False):
 
     return per_wb_parameters_df, ref_parameters_df, sample_wise_metrics_per_trial
 
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
+
 participant_folder = False
 #participant_folder ='011'
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial", "wb_id"]

@@ -1,2 +1,0 @@
-tp_samples,fp_samples,fn_samples,tn_samples,accuracy,sensitivity,specificity,ppv
-12,20,4,24,0.6,0.9908037948897037,0.9815145668072132,0.375

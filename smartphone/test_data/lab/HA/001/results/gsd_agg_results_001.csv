@@ -1,0 +1,7 @@
+metric,origin,aggregation,values
+all,all,n_datapoints,3
+duration_s,abs_error,mean,5.297
+duration_s,abs_error,quantiles,"(4.921, 5.614)"
+duration_s,all,icc,"(0.105, array([-0.86,  0.96]))"
+duration_s,detected,mean,80.52
+duration_s,detected,quantiles,"(78.17, 83.57)"

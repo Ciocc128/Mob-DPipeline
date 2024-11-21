@@ -1,2 +1,0 @@
-wb_id,tp_samples,fp_samples,fn_samples,precision,recall,f1_score,PPV
-0,366.0,139.0,153.0,0.7247524752475247,0.7052023121387283,0.71484375,0.7247524752475247

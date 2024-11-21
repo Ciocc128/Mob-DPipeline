@@ -1,8 +1,0 @@
-metric,origin,aggregation,values
-ic,abs_error,mean,47.160427807486634
-ic,abs_error,std,9.321017102047069
-ic,all,icc,"(0.999803045399797, array([1., 1.]))"
-ic,error,mean,46.80748663101604
-ic,error,std,10.959275959868567
-ic,rel_error,mean,0.01761969976438237
-ic,rel_error,std,0.01277968576096764

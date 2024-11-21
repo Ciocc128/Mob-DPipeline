@@ -27,7 +27,16 @@ def save_results_to_folder(dataframes, participant_folder, filenames):
         df.to_csv(file_path, index=True)  # Save with index for traceability
         print(f"Saved {filename} to {file_path}")
 
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+def truncate_to_decimals(x):
+    if isinstance(x, float):  # Applica solo ai numeri float
+        return round(x, 3)
+    elif isinstance(x, (tuple, list)):  # Se è un tuple o una lista, tronca ricorsivamente
+        return type(x)(truncate_to_decimals(i) for i in x)
+    return x  # Mantieni gli altri valori inalterati
+
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
+
 participant_folder = False
 #participant_folder = '011'
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
@@ -113,10 +122,12 @@ for participant_folder in participants:
 
         combined_sl_with_errors = combined_sl_with_errors.reindex(columns=multiindex_column_order)
         all_sl_with_errors.append(combined_sl_with_errors)
+        print('Stride length with errors:')
         display(combined_sl_with_errors)
 
         aggregation = [
-            *((("stride_length_m", o), ["mean", "std", A.quantiles]) for o in ["detected", "reference", "error", "abs_error", "rel_error"]),
+            *((("stride_length_m", o), ["mean", A.quantiles]) for o in ["detected", "abs_error"]),
+            *[(("stride_length_m", o), ["mean", A.loa]) for o in ["rel_error"]],
             *(
                 CustomOperation(identifier=m, function=A.icc, column_name=(m, "all"))
                 for m in ["stride_length_m"]
@@ -130,8 +141,8 @@ for participant_folder in participants:
             .sort_index(level=0)
             .to_frame("values")
         )
-
-        display(agg_results)
+        agg_results_truncated = agg_results.map(truncate_to_decimals)
+        display(agg_results_truncated)
 
         # Save results for the participant
         save_results_to_folder(
@@ -140,12 +151,19 @@ for participant_folder in participants:
             filenames=[f"sl_with_errors_{participant_folder}.csv", f"sl_agg_results_{participant_folder}.csv"]
         )
 
+        print('-----------------------------------')
+        print('\n')
+
 global_results = pd.concat(all_sl_with_errors)
+print('Global stride length with errors:')
+display(global_results)
 
 # Calculate agg_results for the global_combined_tp_with_errors
 global_aggregation = [
-    *[(("stride_length_m", o), ["mean", "std"]) for o in ["abs_error", "rel_error"]],
-    CustomOperation(identifier="stride_length_m", function=A.icc, column_name=("stride_length_m", "all"))
+    *[(("stride_length_m", o), ["mean", A.quantiles]) for o in ["abs_error", "detected"]],
+    *[(("stride_length_m", o), ["mean", A.loa]) for o in ["rel_error"]],
+    *[CustomOperation(identifier="stride_length_m", function=A.icc, column_name=("stride_length_m", "all"))],
+    CustomOperation(identifier=None, function=A.n_datapoints, column_name=("all", "all")),
 ]
 global_agg_results = (
     apply_aggregations(global_results.dropna(), global_aggregation)
@@ -154,13 +172,18 @@ global_agg_results = (
     .sort_index(level=0)
     .to_frame("values")
 )
+print('Global aggregated results:')
+global_agg_results_truncated = global_agg_results.map(truncate_to_decimals)
+display(global_agg_results_truncated)
 
 agg_by_participant = (
     global_results.groupby("participant_id").apply(
         lambda df: apply_aggregations(df, aggregation)
     )
 )
-display(agg_by_participant.transpose())
+print('Aggregated results by participant:')
+agg_by_participant_trunc = agg_by_participant.map(truncate_to_decimals)
+display(agg_by_participant_trunc.transpose())
 
 # Save the global results
 results_path = os.path.join(base_dir, "CohortResults")

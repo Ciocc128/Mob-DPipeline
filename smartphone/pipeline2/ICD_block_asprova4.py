@@ -66,9 +66,11 @@ def calculate_icd_shin_output(single_test_data, plot):
 
     return det_ics, imu_data
 
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
+
 participant_folder = False
-plot = False
+plot = True
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
 
 participants = [participant_folder] if participant_folder else os.listdir(base_dir)
@@ -156,6 +158,11 @@ for participant_folder in participants:
             ('ic', 'detected'), ('ic', 'reference'), ('ic', 'abs_error'), ('ic', 'rel_error')
         ]
         combined_tp_with_errors = combined_tp_with_errors.reindex(columns=multiindex_column_order)
+        print(f"Error metrics for detected ICs:\n")
+        display(combined_tp_with_errors)
+
+        print(f"Metrics per WB:\n")
+        display(metrics_per_wb_df)
 
         # Append to global lists
         all_combined_tp_with_errors.append(combined_tp_with_errors)
@@ -165,11 +172,16 @@ for participant_folder in participants:
         save_results_to_folder(
             dataframes=[combined_tp_with_errors, metrics_per_wb_df],
             participant_folder=participant_path,
-            filenames=[f"icd_tp_with_errors_{participant_folder}.csv", f"metrics_per_wb_{participant_folder}.csv"]
+            filenames=[f"icd_tp_with_errors_{participant_folder}.csv", f"icd_metrics_per_wb_{participant_folder}.csv"]
         )
 
-# Concatenate all participants' combined_tp_with_errors and metrics_per_wb into single DataFrames
+        print('-----------------------------------')
+        print('\n')
+
+#%% Concatenate all participants' combined_tp_with_errors and metrics_per_wb into single DataFrames
 global_combined_tp_with_errors = pd.concat(all_combined_tp_with_errors)
+print("Global combined TP with Errors:")
+display(global_combined_tp_with_errors)
 global_metrics_per_wb = pd.concat(all_metrics_per_wb)
 
 # Calculate totals and means
@@ -194,17 +206,21 @@ summary_row.columns = global_metrics_per_wb.columns
 
 # Append the summary row to the DataFrame
 global_metrics_with_summary = pd.concat([global_metrics_per_wb, summary_row])
+print("Global Metrics per WB with Summary:")
+display(global_metrics_with_summary)
 
 # Save the concatenated DataFrames
 results_path = os.path.join(base_dir, "CohortResults")
 os.makedirs(results_path, exist_ok=True)
-global_combined_tp_with_errors.to_csv(os.path.join(results_path, "icd_tp_with_errors.csv"), index=True)
-global_metrics_with_summary.to_csv(os.path.join(results_path, "icd_metrics_per_wb.csv"), index=True)
+global_combined_tp_with_errors.to_csv(os.path.join(results_path, "inLab_icd_tp_with_errors.csv"), index=True)
+global_metrics_with_summary.to_csv(os.path.join(results_path, "inLab_icd_metrics_per_wb.csv"), index=True)
 
 # Calculate agg_results for the global_combined_tp_with_errors
 global_aggregation = [
-    *[(("ic", o), ["mean", "std"]) for o in ["abs_error", "rel_error"]],
-    CustomOperation(identifier="ic", function=A.icc, column_name=("ic", "all"))
+    *[(("ic", o), ["mean", A.quantiles]) for o in ["abs_error"]],
+    *[(("ic", o), ["mean", A.loa]) for o in ["rel_error"]],
+    *[CustomOperation(identifier="ic", function=A.icc, column_name=("ic", "all"))],
+    CustomOperation(identifier=None, function=A.n_datapoints, column_name=("all", "all"))
 ]
 global_agg_results = (
     apply_aggregations(global_combined_tp_with_errors.dropna(), global_aggregation)
@@ -215,9 +231,13 @@ global_agg_results = (
 )
 
 # Save the aggregated results
-global_agg_results.to_csv(os.path.join(results_path, "icd_agg_results.csv"), index=True)
+print("Global Aggregated Results:")
+display(global_agg_results)
+global_agg_results.to_csv(os.path.join(results_path, "inLab_icd_agg_results.csv"), index=True)
 
 print("Global results saved:")
 print(f"Combined TP with Errors: {os.path.join(results_path, 'icd_tp_with_errors.csv')}")
 print(f"Metrics per WB: {os.path.join(results_path, 'icd_metrics_per_wb.csv')}")
 print(f"Aggregated Results: {os.path.join(results_path, 'icd_agg_results.csv')}")
+
+# %%

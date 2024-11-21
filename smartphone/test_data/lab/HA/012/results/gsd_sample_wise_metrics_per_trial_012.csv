@@ -1,13 +1,13 @@
 trial,accuracy,sensitivity,specificity,ppv,tp,fp,fn,tn
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial1')",0.9432035737077218,0.934412955465587,0.9489204844655081,0.9224620303756994,1154,97,81,1802
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial2')",0.9717314487632509,0.9425287356321839,0.9880624426078971,0.9778534923339012,1148,26,70,2152
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial3')",0.934375,0.8837592745259687,0.9799554565701559,0.9754322111010009,1072,27,141,1320
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial1')",0.9804788213627993,0.9723756906077348,0.9845303867403314,0.9691629955947136,880,28,25,1782
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial2')",0.9907308377896613,1.0,0.9864229765013055,0.9716157205240175,890,26,0,1889
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial3')",0.9647330257086355,0.9687875150060024,0.9631985461154021,0.9087837837837838,807,81,26,2120
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial1')",0.9349301397205588,1.0,0.9129273504273504,0.7952261306532663,633,163,0,1709
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial2')",0.961730449251248,1.0,0.9458823529411765,0.8844221105527639,704,92,0,1608
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial3')",0.9465917076598735,1.0,0.9315315315315316,0.8046272493573264,626,152,0,2068
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial1')",0.9932126696832579,0.9924864991782109,0.9969660194174758,0.9994089135831659,8454,5,64,1643
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial2')",0.9872917255012709,0.9848762603116407,0.9984168865435357,0.9996511222235144,8596,3,132,1892
-"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial3')",0.9900027515362744,0.9878646181251391,1.0,1.0,8873,0,109,1921
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial1')",0.8669432035737077,1.0,0.7804107424960506,0.7475786924939467,1235,417,0,1482
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial2')",0.9163722025912838,1.0,0.869605142332415,0.810918774966711,1218,284,0,1894
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test4', trial='Trial3')",0.887109375,1.0,0.785449146250928,0.8075898801597869,1213,289,0,1058
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial1')",0.8353591160220994,1.0,0.7530386740331492,0.6693786982248521,905,447,0,1363
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial2')",0.8352941176470589,1.0,0.7587467362924282,0.658284023668639,890,462,0,1453
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test5', trial='Trial3')",0.8783783783783784,1.0,0.8323489323034984,0.6930116472545758,833,369,0,1832
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial1')",0.8327345309381238,1.0,0.7761752136752137,0.6017110266159695,633,419,0,1453
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial2')",0.8552412645590682,1.0,0.7952941176470588,0.6692015209125475,704,348,0,1352
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test6', trial='Trial3')",0.9030217849613492,1.0,0.8756756756756757,0.6940133037694013,626,276,0,1944
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial1')",0.9671453865827268,1.0,0.7973300970873787,0.9622684139177587,8518,334,0,1314
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial2')",0.9600866045373246,1.0,0.7762532981530343,0.9536713286713286,8728,424,0,1471
+"GenericMobilisedDatasetGroupLabel(cohort='HA', participant_id='012', time_measure='TimeMeasure1', test='Test7', trial='Trial3')",0.9568925983674218,1.0,0.7553357626236336,0.9502750740584004,8982,470,0,1451

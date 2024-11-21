@@ -1,0 +1,8 @@
+,,,,,,duration_s,duration_s,duration_s,end,end,start,start,wb_id,wb_id
+,,,,,,abs_error,detected,reference,detected,reference,detected,reference,detected,reference
+cohort,participant_id,time_measure,test,trial,match_id,,,,,,,,,
+HA,012,TimeMeasure1,Test4,Trial2,0,2.8599999999999994,15.02,12.16,2551,2409,1050,1192,0,0
+HA,012,TimeMeasure1,Test4,Trial3,0,2.910000000000002,15.02,12.109999999999998,2551,2358,1050,1146,0,0
+HA,012,TimeMeasure1,Test7,Trial1,0,3.3599999999999994,88.52,85.16,9601,9384,750,867,0,0
+HA,012,TimeMeasure1,Test7,Trial2,0,4.260000000000005,91.52,87.25999999999999,10051,9802,900,1075,0,0
+HA,012,TimeMeasure1,Test7,Trial3,0,4.719999999999999,94.52,89.8,10351,10070,900,1089,0,0

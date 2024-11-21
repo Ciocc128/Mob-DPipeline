@@ -25,7 +25,9 @@ def save_results_to_folder(dataframes, participant_folder, filenames):
         df.to_csv(file_path, index=True)  # Save with index for traceability
         print(f"Saved {filename} to {file_path}")
 
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = 'C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/'
+
 participant_folder = False#'011'
 index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
 participants = [participant_folder] if participant_folder else os.listdir(base_dir)
@@ -96,10 +98,12 @@ for participant_folder in participants:
         cad_errors = apply_transformations(combined_cad, errors)
         combined_cad_with_errors = pd.concat([combined_cad, cad_errors], axis=1)
         all_cad_with_errors.append(combined_cad_with_errors)
+        print('Cadence with errors:')
         display(combined_cad_with_errors)
 
         aggregation = [
-            *[(("cadence_spm", o), ["mean", "std"]) for o in ["abs_error", "rel_error"]],
+            *[(("cadence_spm", o), ["mean", A.quantiles]) for o in ["abs_error", "detected"]],
+            *[(("cadence_spm", o), ["mean", A.loa]) for o in ["rel_error"]],
             CustomOperation(
                 identifier="cadence_spm",
                 function=A.icc,
@@ -115,6 +119,7 @@ for participant_folder in participants:
             .to_frame("values")
         )
 
+        print('Aggregated results:')
         display(agg_results)
 
         # Save results for the participant
@@ -123,12 +128,20 @@ for participant_folder in participants:
             participant_folder=participant_path,
             filenames=[f"cad_with_errors_{participant_folder}.csv", f"cad_agg_results_{participant_folder}.csv"]
         )
+
+        print('-----------------------------------')
+        print('\n')
+
 global_results = pd.concat(all_cad_with_errors)
+print('Global cadence with errors:')
+display(global_results)
 
 # Calculate agg_results for the global_combined_tp_with_errors
 global_aggregation = [
-    *[(("cadence_spm", o), ["mean", "std"]) for o in ["abs_error", "rel_error"]],
-    CustomOperation(identifier="cadence_spm", function=A.icc, column_name=("cadence_spm", "all"))
+    *[(("cadence_spm", o), ["mean", A.quantiles]) for o in ["abs_error", "detected"]],
+    *[(("cadence_spm", o), ["mean", A.loa]) for o in ["rel_error"]],
+    *[CustomOperation(identifier="cadence_spm", function=A.icc, column_name=("cadence_spm", "all"))],
+    CustomOperation(identifier=None, function=A.n_datapoints, column_name=("all", "all")),
 ]
 global_agg_results = (
     apply_aggregations(global_results.dropna(), global_aggregation)
@@ -137,6 +150,9 @@ global_agg_results = (
     .sort_index(level=0)
     .to_frame("values")
 )
+
+print('Global aggregated results:')
+display(global_agg_results)
 
 # Save the global results
 results_path = os.path.join(base_dir, "CohortResults")

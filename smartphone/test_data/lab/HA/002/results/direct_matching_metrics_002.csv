@@ -1,2 +1,0 @@
-tp_samples,fp_samples,fn_samples,precision,recall,f1_score
-9,3,3,0.75,0.75,0.75

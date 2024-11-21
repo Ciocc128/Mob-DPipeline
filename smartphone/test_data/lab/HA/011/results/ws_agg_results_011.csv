@@ -1,0 +1,35 @@
+metric,origin,aggregation,values
+all,all,n_datapoints,7
+cadence_spm,all,icc,"(0.98, array([0.9, 1. ]))"
+cadence_spm,detected,mean,101.92
+cadence_spm,detected,quantiles,"(88.07, 112.2)"
+cadence_spm,reference,mean,104.17
+cadence_spm,reference,quantiles,"(90.86, 114.12)"
+duration_s,all,icc,"(1.0, array([0.99, 1.  ]))"
+duration_s,detected,mean,40.32
+duration_s,detected,quantiles,"(10.06, 83.09)"
+duration_s,reference,mean,37.93
+duration_s,reference,quantiles,"(8.87, 79.76)"
+n_strides,all,icc,"(1.0, array([0.99, 1.  ]))"
+n_strides,detected,mean,72.0
+n_strides,detected,quantiles,"(16.2, 153.2)"
+n_strides,reference,mean,68.71
+n_strides,reference,quantiles,"(14.6, 149.2)"
+stride_length_m,all,icc,"(0.48, array([-0.28,  0.89]))"
+stride_length_m,detected,mean,1.31
+stride_length_m,detected,quantiles,"(1.2, 1.43)"
+stride_length_m,reference,mean,1.4
+stride_length_m,reference,quantiles,"(1.32, 1.49)"
+walking_speed_mps,abs_error,mean,0.09
+walking_speed_mps,abs_error,quantiles,"(0.05, 0.14)"
+walking_speed_mps,abs_rel_error,mean,0.08
+walking_speed_mps,abs_rel_error,quantiles,"(0.04, 0.13)"
+walking_speed_mps,all,icc,"(0.89, array([0.54, 0.98]))"
+walking_speed_mps,detected,mean,1.13
+walking_speed_mps,detected,quantiles,"(0.9, 1.34)"
+walking_speed_mps,error,loa,"(-0.16, -0.02)"
+walking_speed_mps,error,mean,-0.09
+walking_speed_mps,reference,mean,1.22
+walking_speed_mps,reference,quantiles,"(1.01, 1.41)"
+walking_speed_mps,rel_error,loa,"(-0.16, 0.0)"
+walking_speed_mps,rel_error,mean,-0.08

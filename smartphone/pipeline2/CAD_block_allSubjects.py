@@ -10,6 +10,8 @@ It performs the following steps for each participant:
 5. Aggregate the errors and compute metrics (e.g., ICC).
 6. Save the results (cadence errors and aggregated metrics) to CSV files in a results folder.
 """
+
+
 #%% Import necessary libraries
 from mobgap.cadence import CadFromIcDetector
 from mobgap.data import GenericMobilisedDataset
@@ -23,7 +25,11 @@ from mobgap.pipeline.evaluation import ErrorTransformFuncs as E
 from mobgap.utils.df_operations import apply_transformations, apply_aggregations, CustomOperation
 from mobgap.pipeline.evaluation import CustomErrorAggregations as A
 
-"""# Helper function to calculate ICD Shin Improved output for a single trial
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
+# Helper function to calculate ICD Shin Improved output for a single trial
 def calculate_icd_shin_output(single_test_data):
     imu_data = to_body_frame(single_test_data.data_ss)
     sampling_rate_hz = single_test_data.sampling_rate_hz
@@ -56,26 +62,32 @@ def process_participant(participant_id, data_path):
     all_ref_cad = {}
 
     for trial in mobDataset[3:]:  # Process trials from the 4th one onward
-        imu_data = trial.data_ss
-        reference_ic = trial.reference_parameters_relative_to_wb_.ic_list
         reference_gs = trial.reference_parameters_relative_to_wb_.wb_list
 
         # Calculate ICs using Shin Algorithm
         # Calculate cadence from detected IC
 
-        for (gs, data), r in iterator.iterate(imu_data, reference_gs):
-            r.ic_list = reference_ic.loc[gs.id]
-            refined_gs, refined_ic_list = refine_gs(r.ic_list)
-            with iterator.subregion(refined_gs) as ((_, refined_gs_data), rr):
-                cad = cad_from_ic_detector().calculate(
-                    to_body_frame(refined_gs_data),
-                    initial_contacts=refined_ic_list,
-                    sampling_rate_hz=trial.sampling_rate_hz,
-                )
-                rr.cadence_per_sec = cad.cadence_per_sec_
+        # Calculate cadence from detected ICs
+        cad_from_ic = CadFromIc()
 
-        all_detected_cad[trial.group_label] = iterator.results_.cadence_per_sec.groupby("wb_id").mean()
+        gs_id = reference_gs.index[0]
+        data_in_gs = trial.data_ss.iloc[
+            reference_gs.start.iloc[0]:reference_gs.end.iloc[0]
+        ]
+        display(data_in_gs)
+        ics_in_gs = detected_ics[["ic"]].loc[gs_id]
+        display(ics_in_gs)
+
+        cad_from_ic.calculate(
+            data_in_gs,
+            initial_contacts=ics_in_gs,
+            sampling_rate_hz=trial.sampling_rate_hz,
+        )
+        display(cad_from_ic.cadence_per_sec_)
+
+        all_detected_cad[trial.group_label] = cad_from_ic.cadence_per_sec_#["cadence_spm"].mean()
         all_ref_cad[trial.group_label] = reference_gs[["avg_cadence_spm"]].rename(columns={"avg_cadence_spm": "cadence_spm"})
+        break
 
     # Concatenate results
     index_names = ["cohort", "participant_id", "time_measure", "test", "trial"]
@@ -90,6 +102,7 @@ def process_participant(participant_id, data_path):
     errors = [("cadence_spm", [E.abs_error, E.rel_error])]
     cad_errors = apply_transformations(combined_cad, errors)
     combined_cad_with_errors = pd.concat([combined_cad, cad_errors], axis=1)
+    display(combined_cad_with_errors)
 
     # Aggregation
     aggregation = [
@@ -104,6 +117,7 @@ def process_participant(participant_id, data_path):
         .sort_index(level=0)
         .to_frame("values")
     )
+    display(agg_results)
 
     # Save results to CSV
     results_folder = os.path.join(data_path, "results")
@@ -124,8 +138,8 @@ def process_all_participants(base_path):
             process_participant(participant_folder, participant_path)
 
 # Define the base directory containing participant folders
-base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
-
+#base_dir = 'C:/Users/ac4gt/Desktop/Mob-DPipeline/smartphone/test_data/lab/HA/'
+base_dir = "C:/PoliTO/Tesi/mobgap/smartphone/test_data/lab/HA/"
 # Run the processing for all participants
 process_all_participants(base_dir)
 

@@ -1,6 +1,9 @@
 metric,origin,aggregation,values
+all,all,n_datapoints,180
 stride_length_m,abs_error,mean,0.14556108384159533
-stride_length_m,abs_error,std,0.08900956784714154
+stride_length_m,abs_error,quantiles,"(0.019035911439284573, 0.31330442164236305)"
 stride_length_m,all,icc,"(0.8094854781654294, array([0.75, 0.85]))"
+stride_length_m,detected,mean,1.3013741353509352
+stride_length_m,detected,quantiles,"(0.8539098692913458, 1.7312272610717316)"
+stride_length_m,rel_error,loa,"(-0.24175464364427784, 0.03835254487641386)"
 stride_length_m,rel_error,mean,-0.101701049383932
-stride_length_m,rel_error,std,0.07145591543895197
