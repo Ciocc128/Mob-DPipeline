@@ -46,7 +46,7 @@ Docu-helper
 -----------
 
 .. autosummary::
-   :toctree: generated/gsd
+   :toctree: generated/gait_sequences
    :template: func.rst
 
     base_gsd_docfiller
@@ -67,20 +67,22 @@ Evaluation
     plot_categorized_intervals
     get_matching_intervals
 
-Evaluation Challenges
-+++++++++++++++++++++
+Evaluation Scores
++++++++++++++++++
+These scores are expected to be used in combination with :class:`~mobgap.utils.evaluation.Evaluation` and
+:class:`~mobgap.utils.evaluation.EvaluationCV` or directly with :func:`~tpcp.validation.cross_validation` and
+:func:`~tpcp.validation.validation`.
 
 .. currentmodule:: mobgap.gait_sequences.evaluation
 
 .. autosummary::
-   :toctree: generated/gait_sequences
-   :template: class.rst
+   :toctree: generated/stride_length
 
-    GsdEvaluation
-    GsdEvaluationCV
+    gsd_score
 
 .. autosummary::
    :toctree: generated/gait_sequences
    :template: func.rst
 
-    gsd_evaluation_scorer
+    gsd_per_datapoint_score
+    gsd_final_agg
